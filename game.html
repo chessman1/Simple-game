@@ -22,20 +22,16 @@
         <script>
             var canvas = document.getElementById('canvas');
             var ctx = canvas.getContext('2d');
-
             canvas.width = 700;
             canvas.height = 500;
-
-
             var mySprite = {
                 x: 250,
                 y: 470,
                 width: 10,
                 height: 10,
                 speed: 100,
-                color: "blue"
+                color: "green"
             };
-
             var tool = {
                 width: 5,
                 height: 5,
@@ -55,8 +51,9 @@
             });
 
             var mob;
-
+            var enemyTool;
             var mobs = new Array();
+            var enemyTools = new Array();
 
             for (i = 0; i < 5; i++) {
                 mob = {
@@ -65,16 +62,25 @@
                     width: 10,
                     height: 10,
                     speed: 10,
-                    color: "pink"
+                    color: "orange"
                 };
-
+                var enemyTool = {
+                    width: 5,
+                    height: 5,
+                    speed: 500,
+                    color: "green",
+                    active: true
+                };
                 mobs.push(mob);
+                enemyTools.push(enemyTool);
             }
 
             function update(mod) {
+
                 for (i = 0; i < 5; i++) {
                     mobs[i].y += mob.speed * mod;
                 }
+
 
                 if (37 in keysDown) {
                     mySprite.x = mySprite.x - mySprite.speed * mod;
@@ -88,6 +94,7 @@
                 if (40 in keysDown) {
                     mySprite.y = mySprite.y + mySprite.speed * mod;
                 }
+
                 if (32 in keysDown) {
                     tool.y = tool.y - tool.speed * mod;
                     if (tool.y <= mySprite.y - 170) {
@@ -95,10 +102,30 @@
                         tool.x = mySprite.x;
                     }
                     tool.active = true;
-                } else {
+                }
+                else {
                     tool.y = mySprite.y;
                     tool.x = mySprite.x;
                     tool.active = false;
+                }
+
+                if (75 in keysDown) {
+                    for (i = 0; i < mobs.length; i++) {
+                        enemyTools[i].y = enemyTools[i].y + enemyTool.speed * mod;
+                        if (enemyTools[i].y <= mobs[i].y - 190) {
+                            enemyTools[i].y = mobs[i].y;
+                            enemyTools[i].x = mobs[i].x;
+                        }
+                    }
+                    enemyTool.active = true;
+
+                }
+                else {
+                    for (i = 0; i < mobs.length; i++) {
+                        enemyTools[i].y = mobs[i].y;
+                        enemyTools[i].x = mobs[i].x;
+                    }
+                    enemyTool.active = false;
                 }
 
                 for (i = 0; i < mobs.length; i++) {
@@ -106,13 +133,14 @@
                             tool.y < mobs[i].y + mobs[i].height &&
                             tool.x > mobs[i].x - mobs[i].width &&
                             tool.y > mobs[i].y - mobs[i].height) {
-                        mobs[i].height = 0;
-                        mobs[i].width = 0;
+                        mobs[i].x = -10;
+                        mobs[i].y = -10;
                     }
                 }
             }
+
             function render() {
-                ctx.fillStyle = "orange";
+                ctx.fillStyle = "pink";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = mySprite.color;
                 ctx.fillRect(mySprite.x, mySprite.y, mySprite.width,
@@ -121,17 +149,21 @@
                     ctx.fillRect(tool.x, tool.y, tool.width, tool.height);
                 }
 
+                if (enemyTool.active) {
+                    for (i = 0; i < enemyTools.length; i++) {
+                        ctx.fillRect(enemyTools[i].x, enemyTools[i].y, enemyTools[i].width,
+                                enemyTools[i].height);
+                    }
+                }
+
                 for (i = 0; i < 5; i++) {
                     ctx.fillStyle = mob.color;
                     ctx.fillRect(mobs[i].x, mobs[i].y, mobs[i].height,
                             mobs[i].width);
                 }
-
-
             }
 
             var time = Date.now();
-
             function run() {
                 update((Date.now() - time) / 1000);
                 time = Date.now();
@@ -139,7 +171,6 @@
             }
 
             setInterval(run, 10);
-
             function restart() {
                 alert("Sorry!");
                 location.reload(true);
