@@ -1,189 +1,188 @@
 <!DOCTYPE html>
-
 <html>
 
-    <head>
-        <title>Game</title>
-    </head>
+<head>
+    <title>Game</title>
+</head>
+<style>
+#canvas {
+    margin-left: 7cm;
+    margin-top: 2cm;
+}
+</style>
 
-    <style>
-        #canvas
-        {
-            margin-left: 7cm;
-            margin-top: 2cm;
+<body>
+    <canvas id="canvas">
+        Your browser does not support canvas tag.
+    </canvas>
+    <script>
+    var canvas,
+        ctx,
+        mySprite,
+        keysDown = {},
+        tool,
+        mob,
+        enemyTool,
+        mobs = [],
+        enemyTools = [],
+        time;
+
+    canvas = document.getElementById('canvas');
+    ctx = canvas.getContext('2d');
+
+    canvas.width = 700;
+    canvas.height = 500;
+
+    mySprite = {
+        x: 250,
+        y: 470,
+        width: 10,
+        height: 10,
+        speed: 100,
+        color: "green"
+    };
+
+    tool = {
+        width: 5,
+        height: 5,
+        speed: 1000,
+        color: "blue",
+        active: true
+    };
+
+    window.addEventListener('keydown', function(e) {
+        keysDown[e.keyCode] = true;
+    });
+
+    window.addEventListener('keyup', function(e) {
+        delete keysDown[e.keyCode];
+    });
+
+
+    for (i = 0; i < 5; i++) {
+
+        mob = {
+            x: Math.floor(Math.random() * 500),
+            y: 10,
+            width: 10,
+            height: 10,
+            speed: 10,
+            color: "orange"
+        };
+
+        enemyTool = {
+            width: 5,
+            height: 5,
+            speed: 500,
+            color: "red",
+            active: true
+        };
+
+        mobs.push(mob);
+        enemyTools.push(enemyTool);
+    }
+
+    function update(mod) {
+        for (i = 0; i < mobs.length; i++) {
+            mobs[i].y += mob.speed * mod;
         }
-    </style>
 
-    <body>
-        <canvas id="canvas">
-            Your browser does not support canvas tag.
-        </canvas>
+        if (37 in keysDown) {
+            mySprite.x -= mySprite.speed * mod;
+        }
+        if (38 in keysDown) {
+            mySprite.y -= mySprite.speed * mod;
+        }
+        if (39 in keysDown) {
+            mySprite.x += mySprite.speed * mod;
+        }
+        if (40 in keysDown) {
+            mySprite.y += mySprite.speed * mod;
+        }
 
-        <script>
-  var canvas,
-      ctx,
-      mySprite,
-      keysDown = [],
-      tool,
-      mob,
-      enemyTool,
-      mobs = [],
-      enemyTools = [],
-      time;
+        if (32 in keysDown) {
+            tool.y -= tool.speed * mod;
+            if (tool.y <= mySprite.y - 170) {
+                tool.y = mySprite.y;
+                tool.x = mySprite.x;
+            }
+            tool.active = true;
+        } else {
+            tool.y = mySprite.y;
+            tool.x = mySprite.x;
+            tool.active = false;
+        }
 
-  canvas = document.getElementById('canvas');
-  ctx = canvas.getContext('2d');
-
-  canvas.width = 700;
-  canvas.height = 500;
-
-  mySprite = {
-      x: 250,
-      y: 470,
-      width: 10,
-      height: 10,
-      speed: 100,
-      color: "green"
-  };
-
-  tool = {
-      width: 5,
-      height: 5,
-      speed: 1000,
-      color: "blue",
-      active: true
-  };
-
-  window.addEventListener('keydown', function(e) {
-      keysDown[e.keyCode] = true;
-  });
-
-  window.addEventListener('keyup', function(e) {
-      delete keysDown[e.keyCode];
-  });
-
-  for (i = 0; i < 5; i++) {
-
-      mob = {
-          x: Math.floor(Math.random() * 500),
-          y: 10,
-          width: 10,
-          height: 10,
-          speed: 10,
-          color: "orange"
-      };
-
-      enemyTool = {
-          width: 5,
-          height: 5,
-          speed: 500,
-          color: "red",
-          active: true
-      };
-      mobs.push(mob);
-      enemyTools.push(enemyTool);
-  }
-
-  function update(mod) {
-      for (i = 0; i < mobs.length; i++) {
-          mobs[i].y += mob.speed * mod;
-      }
-
-      if (37 in keysDown) {
-          mySprite.x = mySprite.x - mySprite.speed * mod;
-      }
-      if (38 in keysDown) {
-          mySprite.y = mySprite.y - mySprite.speed * mod;
-      }
-      if (39 in keysDown) {
-          mySprite.x = mySprite.x + mySprite.speed * mod;
-      }
-      if (40 in keysDown) {
-          mySprite.y = mySprite.y + mySprite.speed * mod;
-      }
-
-      if (32 in keysDown) {
-          tool.y = tool.y - tool.speed * mod;
-          if (tool.y <= mySprite.y - 170) {
-              tool.y = mySprite.y;
-              tool.x = mySprite.x;
-          }
-          tool.active = true;
-      } else {
-          tool.y = mySprite.y;
-          tool.x = mySprite.x;
-          tool.active = false;
-      }
-
-      if (75 in keysDown) {
-          for (i = 0; i < mobs.length; i++) {
-              enemyTools[i].y = enemyTools[i].y + enemyTools[i].speed * mod;
-              if (enemyTools[i].y <= mobs[i].y - 190) {
-                  enemyTools[i].x = mobs[i].x;
-                  enemyTools[i].y = mobs[i].y;
-              }
-          }
-          enemyTool.active = true;
-      } else {
-          for (i = 0; i < mobs.length; i++) {
-              enemyTools[i].y = mobs[i].y;
-              enemyTools[i].x = mobs[i].x;
-          }
-          enemyTool.active = false;
-      }
+        if (75 in keysDown) {
+            for (i = 0; i < mobs.length; i++) {
+                enemyTools[i].y += enemyTools[i].speed * mod;
+                if (enemyTools[i].y <= mobs[i].y - 190) {
+                    enemyTools[i].x = mobs[i].x;
+                    enemyTools[i].y = mobs[i].y;
+                }
+            }
+            enemyTool.active = true;
+        } else {
+            for (i = 0; i < mobs.length; i++) {
+                enemyTools[i].y = mobs[i].y;
+                enemyTools[i].x = mobs[i].x;
+            }
+            enemyTool.active = false;
+        }
 
 
-      for (i = 0; i < mobs.length; i++) {
-          if (tool.x < mobs[i].x + mobs[i].width &&
-              tool.y < mobs[i].y + mobs[i].height &&
-              tool.x > mobs[i].x - mobs[i].width &&
-              tool.y > mobs[i].y - mobs[i].height) {
-              mobs[i].x = -10;
-              mobs[i].y = -10;
-          }
-      }
-  }
+        for (i = 0; i < mobs.length; i++) {
+            if (tool.x < mobs[i].x + mobs[i].width &&
+                tool.y < mobs[i].y + mobs[i].height &&
+                tool.x > mobs[i].x - mobs[i].width &&
+                tool.y > mobs[i].y - mobs[i].height) {
+                mobs[i].x = -10;
+                mobs[i].y = -10;
+            }
+        }
+    }
 
-  function render() {
-      ctx.fillStyle = "pink";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = mySprite.color;
-      ctx.fillRect(mySprite.x, mySprite.y, mySprite.width,
-          mySprite.height);
+    function render() {
+        ctx.fillStyle = "pink";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = mySprite.color;
+        ctx.fillRect(mySprite.x, mySprite.y, mySprite.width,
+            mySprite.height);
 
-      if (tool.active) {
-          ctx.fillRect(tool.x, tool.y, tool.width, tool.height);
-      }
+        if (tool.active) {
+            ctx.fillStyle = "orange";
+            ctx.fillRect(tool.x, tool.y, tool.width, tool.height);
+        }
 
-      if (enemyTool.active) {
-          for (i = 0; i < enemyTools.length; i++) {
-              ctx.fillRect(enemyTools[i].x, enemyTools[i].y, enemyTools[i].width,
-                  enemyTools[i].height);
-          }
-      }
 
-      for (i = 0; i < 5; i++) {
-          ctx.fillStyle = mob.color;
-          ctx.fillRect(mobs[i].x, mobs[i].y, mobs[i].height, mobs[i].width);
-      }
-  }
+        if (enemyTool.active) {
+            for (i = 0; i < enemyTools.length; i++) {
+                ctx.fillRect(enemyTools[i].x, enemyTools[i].y, enemyTools[i].width,
+                    enemyTools[i].height);
+            }
+        }
 
-  time = Date.now();
+        for (i = 0; i < mobs.length; i++) {
+            ctx.fillStyle = mob.color;
+            ctx.fillRect(mobs[i].x, mobs[i].y, mobs[i].height, mobs[i].width);
+        }
+    }
 
-  function run() {
-      update((Date.now() - time) / 1000);
-      time = Date.now();
-      render();
-  }
+    time = Date.now();
 
-  setInterval(run, 10);
+    function run() {
+        update((Date.now() - time) / 1000);
+        time = Date.now();
+        render();
+    }
 
-  function restart() {
-      alert("Sorry!");
-      location.reload(true);
-  }
-        </script>
-		
-    </body>
+    setInterval(run, 10);
+
+    function restart() {
+        alert("Sorry!");
+        location.reload(true);
+    }
+    </script>
+</body>
 
 </html>
